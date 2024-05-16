@@ -50,8 +50,12 @@ void setup() {
   while(analogRead(A7) > 10) { // Esperar hasta que la entrada analógica A7 caiga por debajo de 10
     _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
   }
+
+  
   
   while(1) {
+    
+
     // LÍMITE DEL RING
 
     int distancia_ring_linea = linefollower_2.readSensors(); // Leer los sensores del seguidor de línea
