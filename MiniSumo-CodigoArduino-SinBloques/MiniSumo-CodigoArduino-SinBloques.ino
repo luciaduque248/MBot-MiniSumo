@@ -113,10 +113,9 @@ void setup() {
 
       } else {
         // Si el oponente está a más de 10 cm, retroceder y luego girar a la derecha
-        move(2, 100); // Retroceder
-        _delay(0.5); // Retraso durante 0,5 segundos
-        move(4, 100); // Girar a la derecha
-        _delay(0.5); // Retraso durante 0,5 segundos
+        move(1, 0); // Detener el movimiento
+        rgbled_7.setColor(0, 0, 255, 0); // Establecer el color del LED RGB en verde
+        rgbled_7.show(); // Mostrar el color
       }
 
       distancia_ring_linea = linefollower_2.readSensors(); // Leer nuevamente los sensores del seguidor de línea para detectar si se sacó al oponente
