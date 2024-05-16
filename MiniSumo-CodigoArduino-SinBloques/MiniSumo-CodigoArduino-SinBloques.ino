@@ -29,38 +29,55 @@ void move(int direction, int speed) {
     leftSpeed = speed;
     rightSpeed = -speed;
   }
-  motor_9.run((9) == M1 ? -(leftSpeed) : (leftSpeed)); // Hacer funcionar el motor izquierdo con la velocidad calculada
-  motor_10.run((10) == M1 ? -(rightSpeed) : (rightSpeed)); // Hacer funcionar el motor derecho con la velocidad calculada
+  motor_9.run((9) == M1 ? -(leftSpeed) : (leftSpeed));        // Hacer funcionar el motor izquierdo con la velocidad calculada
+  motor_10.run((10) == M1 ? -(rightSpeed) : (rightSpeed));    // Hacer funcionar el motor derecho con la velocidad calculada
 }
 
 void _delay(float seconds) {
   long endTime = millis() + seconds * 1000;
-  while(millis() < endTime) _loop(); // Función de retraso que permite que se ejecuten otras tareas durante el retraso
+  while(millis() < endTime) _loop();                          // Función de retraso que permite que se ejecuten otras tareas durante el retraso
 }
 
-void setup() {
-  Serial.begin(9600); // Inicializar la comunicación serial a 9600 baudios
+void avanzarHastaDetectarLinea() {
+  while (true) {
+    int sensorValue = linefollower_2.readSensors();
+    Serial.println(sensorValue); // Imprimir el valor del sensor para depuración
+    if (sensorValue == 0) { // Si los sensores detectan la línea (posiblemente, dependiendo de cómo estén configurados)
+      break; // Salir del bucle si se detecta la línea
+    }
+    move(1, 100); // Mueve hacia adelante a velocidad máxima
+    _loop();
+  }
+  // Detener el movimiento una vez que se detecta la línea
+  motor_9.run(0);
+  motor_10.run(0);
+}
 
-  pinMode(A7, INPUT); // Configurar el pin A7 como entrada
-  rgbled_7.fillPixelsBak(0, 2, 1); // Inicializar el LED RGB con un patrón de color
-  while(!(analogRead(A7) > 10)) { // Esperar hasta que la entrada analógica A7 supere 10
-    _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
+
+void setup() {
+  Serial.begin(9600);               // Inicializar la comunicación serial a 9600 baudios
+
+  pinMode(A7, INPUT);               // Configurar el pin A7 como entrada
+  rgbled_7.fillPixelsBak(0, 2, 1);  // Inicializar el LED RGB con un patrón de color
+  while(!(analogRead(A7) > 10)) {   // Esperar hasta que la entrada analógica A7 supere 10
+    _loop();                        // Permitir que se ejecuten otras tareas durante el período de espera
   }
   
-  while(analogRead(A7) > 10) { // Esperar hasta que la entrada analógica A7 caiga por debajo de 10
-    _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
+  while(analogRead(A7) > 10) {      // Esperar hasta que la entrada analógica A7 caiga por debajo de 10
+    _loop();                        // Permitir que se ejecuten otras tareas durante el período de espera
   }
 
   // Añadir el nuevo while que espera 5 segundos y realiza las acciones específicas
   long startTime = millis();
-  while(millis() - startTime < 5000) { // Esperar 5 segundos
+  while(millis() - startTime < 5000) {       // Esperar 5 segundos
     // Tocar el pitido
-    buzzer.tone(175, 0.25 * 1000); // Reproducir una nota musical (G) durante 0,25 segundos
-    _delay(0.75); // Esperar 0,75 segundos para que el pitido se repita cada segundo
+    buzzer.tone(175, 0.25 * 1000);      // Reproducir una nota musical (G) durante 0,25 segundos
+    _delay(0.75);                       // Esperar 0,75 segundos para que el pitido se repita cada segundo
+    
     // Encender LED con color específico
-    rgbled_7.setColor(0, 255, 0, 157); // Establecer el color del LED RGB en el color especificado
-    rgbled_7.show(); // Mostrar el color
-    _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
+    rgbled_7.setColor(0, 255, 0, 157);  // Establecer el color del LED RGB en el color especificado
+    rgbled_7.show();                    // Mostrar el color
+    _loop();                            // Permitir que se ejecuten otras tareas durante el período de espera
   }
 
   // Encender LED en azul para indicar que está buscando la distancia de la línea
@@ -68,9 +85,11 @@ void setup() {
   rgbled_7.show(); // Mostrar el color
 
   // Esperar a que se detecte la línea negra para iniciar la búsqueda del oponente
-  while(linefollower_2.readSensors() != 3 ) {
-    _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
-  }
+  //while(linefollower_2.readSensors() != 3 ) {
+    //_loop(); // Permitir que se ejecuten otras tareas durante el período de espera
+  //}
+
+  avanzarHastaDetectarLinea();
   
   
   while(1) {
@@ -99,14 +118,12 @@ void setup() {
         rgbled_7.show(); // Mostrar el color
 
         // Mover hacia adelante a toda velocidad
-        move(1, 100);
+        move(1, 100 / 100.0 * 255);
 
       } else {
-        // Si el oponente está a más de 10 cm, retroceder y luego girar a la derecha
-        move(2, 100); // Retroceder
-        _delay(0.5); // Retraso durante 0,5 segundos
-        move(4, 100); // Girar a la derecha
-        _delay(0.5); // Retraso durante 0,5 segundos
+        // Si el oponente está a más de 10 cm
+        motor_9.run(0);
+        motor_10.run(0);
       }
 
       distancia_ring_linea = linefollower_2.readSensors(); // Leer nuevamente los sensores del seguidor de línea para detectar si se sacó al oponente
@@ -120,7 +137,7 @@ void setup() {
     rgbled_7.show(); // Mostrar el color
 
     // Girar a la izquierda para buscar el ring nuevamente
-    move(3, 100);
+    move(3, 100 / 100.0 * 255);
     _delay(0.5);
   }
 }
