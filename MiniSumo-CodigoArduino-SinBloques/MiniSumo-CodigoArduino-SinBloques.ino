@@ -130,9 +130,9 @@ void setup() {
     rgbled_7.show(); // Mostrar el color
 
     // Girar a la izquierda para buscar el ring nuevamente
-    move(3, 100 / 100.0 * 255);
+    move(3, 80 / 100.0 * 255);
     _delay(0.5);
-    move(3, 100 / 100.0 * 255);
+    move(3, 80 / 100.0 * 255);
     _delay(0.2);
   }
 }
