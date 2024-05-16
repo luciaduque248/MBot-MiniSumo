@@ -51,6 +51,18 @@ void setup() {
     _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
   }
 
+  // Añadir el nuevo while que espera 5 segundos y realiza las acciones específicas
+  long startTime = millis();
+  while(millis() - startTime < 5000) { // Esperar 5 segundos
+    // Tocar el pitido
+    buzzer.tone(175, 0.25 * 1000); // Reproducir una nota musical (G) durante 0,25 segundos
+    _delay(0.75); // Esperar 0,75 segundos para que el pitido se repita cada segundo
+    // Encender LED con color específico
+    rgbled_7.setColor(0, 255, 0, 157); // Establecer el color del LED RGB en el color especificado
+    rgbled_7.show(); // Mostrar el color
+    _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
+  }
+
   
   
   while(1) {
@@ -99,8 +111,9 @@ void setup() {
     rgbled_7.setColor(0, 140, 255, 0); // Establecer el color del LED RGB en verde
     rgbled_7.show(); // Mostrar el color
 
-    // Detenerse
-    move(1, 0); // Detener ambos motores
+    // Girar a la izquierda para buscar el ring nuevamente
+    move(3, 100);
+    _delay(0.5);
   }
 }
 
