@@ -29,8 +29,8 @@ void move(int direction, int speed) {
     leftSpeed = speed;
     rightSpeed = -speed;
   }
-  motor_9.run(leftSpeed); // Hacer funcionar el motor izquierdo con la velocidad calculada
-  motor_10.run(rightSpeed); // Hacer funcionar el motor derecho con la velocidad calculada
+  motor_9.run((9) == M1 ? -(leftSpeed) : (leftSpeed)); // Hacer funcionar el motor izquierdo con la velocidad calculada
+  motor_10.run((10) == M1 ? -(rightSpeed) : (rightSpeed)); // Hacer funcionar el motor derecho con la velocidad calculada
 }
 
 void _delay(float seconds) {
@@ -67,25 +67,15 @@ void setup() {
   rgbled_7.setColor(0, 0, 21, 255); // Establecer el color del LED RGB en azul
   rgbled_7.show(); // Mostrar el color
 
-  // Mover hacia adelante
-  move(1, 100); // Mover hacia adelante a velocidad 100
-
-  // Esperar a que se detecte la línea negra y medir la distancia recorrida
-  long startDistanceTime = millis();
-  while(linefollower_2.readSensors() != 0) { // Esperar hasta detectar la línea negra (ambos sensores en línea negra)
+  // Esperar a que se detecte la línea negra para iniciar la búsqueda del oponente
+  while(linefollower_2.readSensors() != 3 ) {
     _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
   }
-  long endDistanceTime = millis();
   
-  // Calcular la distancia recorrida en el tiempo
-  float distanceTraveled = (endDistanceTime - startDistanceTime) / 1000.0 * 100; // Suponiendo que la velocidad es 100 unidades por segundo
-  Serial.print("Distancia recorrida hasta la línea: ");
-  Serial.println(distanceTraveled);
-
-  // Detener el movimiento
-  move(1, 0); // Detener ambos motores
   
   while(1) {
+    
+
     // LÍMITE DEL RING
 
     int distancia_ring_linea = linefollower_2.readSensors(); // Leer los sensores del seguidor de línea
@@ -96,7 +86,7 @@ void setup() {
       _loop(); // Permitir que se ejecuten otras tareas durante el bucle
 
       double distancia = ultrasonic_3.distanceCm(); // Medir la distancia utilizando el sensor ultrasónico
-      Serial.print("Distancia: ");
+      Serial.print("Distancia del oponente: ");
       Serial.println(distancia);
 
       // OPONENTE
@@ -113,9 +103,10 @@ void setup() {
 
       } else {
         // Si el oponente está a más de 10 cm, retroceder y luego girar a la derecha
-        move(1, 0); // Detener el movimiento
-        rgbled_7.setColor(0, 0, 255, 0); // Establecer el color del LED RGB en verde
-        rgbled_7.show(); // Mostrar el color
+        move(2, 100); // Retroceder
+        _delay(0.5); // Retraso durante 0,5 segundos
+        move(4, 100); // Girar a la derecha
+        _delay(0.5); // Retraso durante 0,5 segundos
       }
 
       distancia_ring_linea = linefollower_2.readSensors(); // Leer nuevamente los sensores del seguidor de línea para detectar si se sacó al oponente
