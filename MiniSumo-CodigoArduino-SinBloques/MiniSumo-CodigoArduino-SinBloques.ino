@@ -63,6 +63,14 @@ void setup() {
     _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
   }
 
+  // Encender LED en azul para indicar que está buscando la distancia de la línea
+  rgbled_7.setColor(0, 0, 21, 255); // Establecer el color del LED RGB en azul
+  rgbled_7.show(); // Mostrar el color
+
+  // Esperar a que se detecte la línea negra para iniciar la búsqueda del oponente
+  while(linefollower_2.readSensors() != 3 ) {
+    _loop(); // Permitir que se ejecuten otras tareas durante el período de espera
+  }
   
   
   while(1) {
@@ -78,7 +86,7 @@ void setup() {
       _loop(); // Permitir que se ejecuten otras tareas durante el bucle
 
       double distancia = ultrasonic_3.distanceCm(); // Medir la distancia utilizando el sensor ultrasónico
-      Serial.print("Distancia: ");
+      Serial.print("Distancia del oponente: ");
       Serial.println(distancia);
 
       // OPONENTE
