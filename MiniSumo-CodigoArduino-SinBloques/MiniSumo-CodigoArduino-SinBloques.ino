@@ -41,11 +41,10 @@ void _delay(float seconds) {
 void avanzarHastaDetectarLinea() {
   while (true) {
     int sensorValue = linefollower_2.readSensors();
-    Serial.println(sensorValue); // Imprimir el valor del sensor para depuración
     if (sensorValue == 0) { // Si los sensores detectan la línea (posiblemente, dependiendo de cómo estén configurados)
       break; // Salir del bucle si se detecta la línea
     }
-    move(1, 100); // Mueve hacia adelante a velocidad máxima
+    move(1, 80 / 100.0 * 255); // Mueve hacia adelante a velocidad máxima
     _loop();
   }
   // Detener el movimiento una vez que se detecta la línea
@@ -84,13 +83,7 @@ void setup() {
   rgbled_7.setColor(0, 0, 21, 255); // Establecer el color del LED RGB en azul
   rgbled_7.show(); // Mostrar el color
 
-  // Esperar a que se detecte la línea negra para iniciar la búsqueda del oponente
-  //while(linefollower_2.readSensors() != 3 ) {
-    //_loop(); // Permitir que se ejecuten otras tareas durante el período de espera
-  //}
-
   avanzarHastaDetectarLinea();
-  
   
   while(1) {
     
